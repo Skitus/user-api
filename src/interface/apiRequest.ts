@@ -5,13 +5,7 @@ export enum Order {
   Desc = 'DESC',
 }
 
-export class RegisterUserRequest {
-  @ApiProperty()
-  firstName: string;
-
-  @ApiProperty()
-  lastName: string;
-
+export class UserCredentialsRequest {
   @ApiProperty()
   email: string;
 
@@ -19,18 +13,12 @@ export class RegisterUserRequest {
   password: string;
 }
 
-export class CreateUserRequest {
+export class RegisterUserRequest extends UserCredentialsRequest {
   @ApiProperty()
   firstName: string;
 
   @ApiProperty()
   lastName: string;
-
-  @ApiProperty()
-  email: string;
-
-  @ApiProperty()
-  password: string;
 }
 
 export enum UserListOrderBy {

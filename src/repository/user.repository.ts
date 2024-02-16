@@ -46,7 +46,7 @@ export class UserRepository {
       .where('user.id = :id', { id })
       .getOne();
 
-    return this.convertToModel(userEntity ?? undefined);
+    return this.convertToModel(userEntity);
   }
 
   public async getByEmail(email: string): Promise<Result<User>> {
@@ -55,7 +55,7 @@ export class UserRepository {
       .where('user.email = :email', { email })
       .getOne();
 
-    return this.convertToModel(userEntity ?? undefined);
+    return this.convertToModel(userEntity);
   }
 
   public async checkUserExistsByEmail(email: string): Promise<boolean> {
@@ -90,6 +90,7 @@ export class UserRepository {
         userEntity.firstName,
         userEntity.lastName,
         userEntity.password,
+        userEntity.id,
       );
     }
   }

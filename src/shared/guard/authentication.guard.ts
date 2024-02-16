@@ -1,37 +1,42 @@
-import {
-  Injectable,
-  ExecutionContext,
-  CanActivate,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-
+import { Injectable, ExecutionContext, CanActivate } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'service/user';
+import { ApplicationError } from 'shared/error';
 
 @Injectable()
 export class AuthenticationGuard implements CanActivate {
   constructor(
-    private reflector: Reflector,
+    private jwtService: JwtService,
     private userService: UserService,
   ) {}
 
   public async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest();
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
 
-    // const authHeader = req.headers['authorization'];
-    // const accessToken: string = authHeader
-    //   ? authHeader.split('Bearer ')[1]
-    //   : '';
+    if (!token) {
+      throw new UnauthorizedException('JWT is not provided');
+    }
 
     try {
-      // const user = await this.userService.getUserByToken(accessToken);
+      const payload = this.jwtService.verify(token);
+      const user = await this.userService.getById(payload.sub);
 
-      const user = {};
+      if (!user) {
+        throw new UnauthorizedException('User is not found');
+      }
 
-      Object.defineProperty(req, 'user', { value: user });
+      req.user = user;
       return true;
-    } catch (e) {}
-
-    throw new UnauthorizedException();
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new UnauthorizedException('Unauthorized: ' + error.message);
+      } else {
+        throw new UnauthorizedException('Unauthorized: Unknown error');
+      }
+    }
   }
 }
+
+export class UnauthorizedException extends ApplicationError {}

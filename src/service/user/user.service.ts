@@ -1,25 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { generate } from 'generate-password';
+import * as bcrypt from 'bcryptjs';
 import { UserRepository } from 'repository';
 import { User } from 'model';
-import { AuthService } from 'service/auth';
-import { CreateUserRequest, RegisterUserRequest } from 'interface/apiRequest';
+import { RegisterUserRequest } from 'interface/apiRequest';
 import { ApplicationError } from 'shared/error';
 import { UserPaginationRequest } from 'shared/value_object/pagination_request';
 import { PaginationResponse } from 'shared/value_object/pagination_response';
+import { Result } from 'shared/util/util';
 
 @Injectable()
 export class UserService {
-  constructor(
-    private readonly userRepository: UserRepository,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly userRepository: UserRepository) {}
 
   public async getById(id: number): Promise<User> {
     const user = await this.userRepository.getById(id);
 
     if (!user) {
-      throw new UserNotFoundError();
+      throw new UserNotFoundError('User not found');
     }
 
     return user;
@@ -29,7 +26,7 @@ export class UserService {
     const user = await this.userRepository.getByEmail(email);
 
     if (!user) {
-      throw new UserNotFoundByEmailError();
+      throw new UserNotFoundByEmailError('User with such email donesn`t exist');
     }
 
     return user;
@@ -39,43 +36,20 @@ export class UserService {
     const userExists = await this.userRepository.checkUserExistsByEmail(email);
 
     if (userExists) {
-      throw new UserAlreadyExistsError();
+      throw new UserAlreadyExistsError('User already exist');
     }
   }
 
   public async registerUser(body: RegisterUserRequest): Promise<User> {
-    let user = new User(
-      body.email,
-      body.firstName,
-      body.lastName,
-      body.password,
-    );
-
-    await this.ensureUserNotExistByEmail(user.email);
-
-    user = await this.userRepository.insertUser(user);
-
-    return user;
-  }
-
-  public generatePassword(): string {
-    return generate({
-      length: 12,
-      numbers: true,
-      uppercase: true,
-      lowercase: true,
-      strict: true,
-    });
-  }
-
-  public async createUser(body: CreateUserRequest): Promise<User> {
     await this.ensureUserNotExistByEmail(body.email);
 
+    const hashedPassword = await bcrypt.hash(body.password, 10);
+
     let user = new User(
       body.email,
       body.firstName,
       body.lastName,
-      body.password,
+      hashedPassword,
     );
 
     user = await this.userRepository.insertUser(user);
@@ -95,6 +69,23 @@ export class UserService {
       userPaginationResponse.total,
       userPaginationResponse.list,
     );
+  }
+
+  public async validateUser(
+    email: string,
+    pass: string,
+  ): Promise<Result<User>> {
+    const user = await this.userRepository.getByEmail(email);
+    if (!user) {
+      return null;
+    }
+
+    const isMatch = await bcrypt.compare(pass, user.password);
+    if (!isMatch) {
+      return null;
+    }
+
+    return user;
   }
 }
 
