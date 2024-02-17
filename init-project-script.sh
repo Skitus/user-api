@@ -16,7 +16,7 @@ yarn start:dev &
 YARN_PID=$!
 
 # Ждем некоторое время, чтобы процесс успел стартовать
-sleep 10
+sleep 5
 
 # Остановка процесса
 pkill -P $YARN_PID yarn
