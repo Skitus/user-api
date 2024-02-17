@@ -1,40 +1,25 @@
 #!/bin/bash
 
-# Переход в директорию user-api
+# Переходим в директорию user-api
 cd user-api
 
-# Создание файла configuration.ts
-echo "Создание файла configuration.ts"
-touch configuration.ts
+# Создаем файл configuration.ts в директории src/config
+mkdir -p src/config
+touch src/config/configuration.ts
 
-# Установка зависимостей через yarn
-echo "Установка зависимостей"
+# Устанавливаем зависимости и запускаем проект в режиме разработки
 yarn
-
-# Запуск в режиме разработки
-echo "Запуск приложения в режиме разработки"
 yarn start:dev &
 
-# ID последней запущенной задачи
-YARN_START_DEV_PID=$!
+# Получаем PID процесса, запущенного в фоне, и останавливаем его через 5 секунд
+PID=$!
+sleep 5
+kill $PID
 
-# Ожидание, например, 10 секунд перед остановкой (настраивается)
-sleep 10
-
-# Остановка yarn start:dev
-echo "Остановка yarn start:dev"
-kill $YARN_START_DEV_PID
-
-# Удаление папки node_modules, папки dist и файла yarn.lock
-echo "Очистка директории"
+# Удаляем папку node_modules, dist и файл yarn.lock
 rm -rf node_modules dist yarn.lock
 
-# Повторная установка зависимостей и миграция
-echo "Повторная установка зависимостей"
+# Устанавливаем зависимости, запускаем миграцию и снова запускаем проект
 yarn
-echo "Выполнение миграций"
 yarn migration:run
-
-# Повторный запуск в режиме разработки
-echo "Повторный запуск в режиме разработки"
 yarn start:dev
