@@ -14,7 +14,7 @@ and then
 yarn start:dev
 ```
 
-# To manually set up and run the project without using a script, follow these steps:
+# To manually set up and run the project without using a script, follow these steps, before clone project please:
 
 ### Change Directory: Navigate to the user-api directory from your terminal.
 ```bash
