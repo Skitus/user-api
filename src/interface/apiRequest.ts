@@ -1,3 +1,4 @@
+import { IsEmail } from 'class-validator';
 import { ApiProperty } from 'shared/decorator';
 
 export enum Order {
@@ -17,6 +18,7 @@ export class RefreshTokenRequest {
 
 export class UserCredentialsRequest {
   @ApiProperty()
+  @IsEmail()
   email: string;
 
   @ApiProperty()
