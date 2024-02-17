@@ -31,7 +31,7 @@ $ cp src/config/configuration.example.ts src/config/configuration.ts
 $ yarn
 ```
 
-### Start the Development Server: Launch the project in development mode with Yarn. This will start the application on a local development server.
+### Start the Development Server: Launch the project in development mode with Yarn. This will start the application on a local development server (HERE AFTER RUN THIS COMMAND YOU WILL GET AN ERROR IT IS OK RUN JUST INSTRUCTION).
 ```bash
 yarn start:dev
 ```
