@@ -21,7 +21,7 @@ yarn start:dev
 $ cd user-api
 ```
 
-### Create Configuration File: Copy the configuration.example.ts file located in src/config to the same directory but rename it to configuration.ts. This creates your project configuration based on the provided example.
+### Create Configuration File: Copy the configuration.example.ts file located in src/config to the same directory but rename it to configuration.ts. This creates your project configuration based on the provided example (this file used instead of .env file).
 ```bash
 $ cp src/config/configuration.example.ts src/config/configuration.ts
 ```
