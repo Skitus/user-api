@@ -1,12 +1,12 @@
 import { Injectable, ExecutionContext, CanActivate } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { JwtAuthService } from 'service/jwt/jwt.service';
 import { UserService } from 'service/user';
 import { ApplicationError } from 'shared/error';
 
 @Injectable()
 export class AuthenticationGuard implements CanActivate {
   constructor(
-    private jwtService: JwtService,
+    private jwtAuthService: JwtAuthService,
     private userService: UserService,
   ) {}
 
@@ -20,8 +20,8 @@ export class AuthenticationGuard implements CanActivate {
     }
 
     try {
-      const payload = this.jwtService.verify(token, { secret: 'skitus' });
-      const user = await this.userService.getById(payload.sub);
+      const payload = this.jwtAuthService.verifyUserWithAccessToken(token);
+      const user = await this.userService.getById(payload.id);
 
       if (!user) {
         throw new UnauthorizedException('User is not found');

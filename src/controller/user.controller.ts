@@ -31,14 +31,23 @@ export class UserController {
 
   @Get('/current')
   @Auth()
-  @ApiResponse({ status: HttpStatus.OK, type: UserResponse })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: UserResponse,
+    description: 'Get user`s account',
+  })
   public async getCurrent(@RequestingUser() user: User): Promise<UserResponse> {
     return this.userFormatter.toUserResponse(user);
   }
 
   @Get('/:id')
   @Auth()
-  @ApiParam({ name: 'id', required: true, type: Number })
+  @ApiParam({
+    name: 'id',
+    required: true,
+    type: Number,
+    description: 'Get user by id',
+  })
   @ApiResponse({ status: HttpStatus.OK, type: UserResponse })
   public async getUser(
     @RequestingUser() user: User,
@@ -46,14 +55,19 @@ export class UserController {
   ): Promise<UserResponse> {
     const foundUser = await this.userService.getById(id);
 
-    await this.userService.ensureUserHasAccessToAnotherUser(foundUser, user);
+    this.userService.ensureUserHasAccessToAnotherUser(foundUser, user);
 
     return this.userFormatter.toUserResponse(user);
   }
 
   @Put('/:id')
   @Auth()
-  @ApiParam({ name: 'id', required: true, type: Number })
+  @ApiParam({
+    name: 'id',
+    required: true,
+    type: Number,
+    description: 'Update user by id',
+  })
   @ApiResponse({ status: HttpStatus.OK, type: UserResponse })
   public async updateUser(
     @Body() body: UpdateUserRequest,
@@ -62,7 +76,7 @@ export class UserController {
   ): Promise<UserResponse> {
     const foundUser = await this.userService.getById(id);
 
-    await this.userService.ensureUserHasAccessToAnotherUser(foundUser, user);
+    this.userService.ensureUserHasAccessToAnotherUser(foundUser, user);
 
     const updatedUser = await this.userService.updateUser(foundUser, body);
 

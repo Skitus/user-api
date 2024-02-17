@@ -22,4 +22,10 @@ export default () => ({
     title: 'Boilerplate',
     description: 'NestJS Boilerplate',
   },
+  jwt: {
+    secretAccessToken: 'someSecret1',
+    expiresInAccessToken: '1h',
+    secretRefreshToken: 'someSecret2',
+    expiresInRefreshToken: '7d',
+  },
 });

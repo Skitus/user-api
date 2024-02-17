@@ -1,20 +1,18 @@
-import { JwtService } from '@nestjs/jwt';
 import { Injectable } from '@nestjs/common';
 import { UserService } from 'service/user';
 import { ApplicationError, InternalError } from 'shared/error';
 import { User } from 'model';
+import { JwtAuthService } from 'service/jwt/jwt.service';
+import { TokenResponse } from 'interface/apiResponse';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly jwtService: JwtService,
+    private readonly jwtAuthService: JwtAuthService,
     private readonly userService: UserService,
   ) {}
 
-  async login(
-    email: string,
-    password: string,
-  ): Promise<{ accessToken: string; refreshToken: string }> {
+  async login(email: string, password: string): Promise<TokenResponse> {
     const user = await this.userService.validateUser(email, password);
     if (!user) {
       throw new UserNotFoundError('Invalid credentials');
@@ -25,43 +23,31 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  public generateToken(user: User): {
-    accessToken: string;
-    refreshToken: string;
-  } {
+  public generateToken(user: User): TokenResponse {
     const payload = { email: user.email, sub: user.id };
 
-    const accessToken = this.jwtService.sign(payload, {
-      secret: 'skitus',
-      expiresIn: '1h',
-    });
+    const { accessToken } = this.jwtAuthService.createAccessToken(payload);
 
-    const refreshToken = this.jwtService.sign(payload, {
-      secret: 'skitus2',
-      expiresIn: '7d',
-    });
+    const { refreshToken } = this.jwtAuthService.createRefreshToken(payload);
 
     return { accessToken, refreshToken };
   }
 
-  public async refreshToken(
-    refreshToken: string,
-  ): Promise<{ accessToken: string; refreshToken?: string }> {
+  public async refreshToken(refreshToken: string): Promise<TokenResponse> {
     try {
-      const payload = this.jwtService.verify(refreshToken, {
-        secret: 'skitus2',
-      });
+      const payload =
+        this.jwtAuthService.verifyUserWithRefreshToken(refreshToken);
 
-      const user = await this.userService.getById(payload.sub);
+      const user = await this.userService.getById(payload.id);
 
       if (!user) {
         throw new UserNotFoundError('User not found');
       }
 
-      const { accessToken, refreshToken: newRefreshToken } =
+      const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
         this.generateToken(user);
 
-      return { accessToken, refreshToken: newRefreshToken };
+      return { accessToken: newAccessToken, refreshToken: newRefreshToken };
     } catch (error) {
       throw new InvalidTokenError('Invalid token');
     }

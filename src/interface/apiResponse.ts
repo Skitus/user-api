@@ -14,6 +14,25 @@ export class UserResponse {
   lastName: string;
 }
 
+export class TokenResponse {
+  @ApiProperty()
+  accessToken: string;
+
+  @ApiProperty()
+  refreshToken: string;
+}
+
+export class UserAndTokenResponse {
+  @ApiProperty({ type: UserResponse })
+  user: UserResponse;
+
+  @ApiProperty()
+  accessToken: string;
+
+  @ApiProperty()
+  refreshToken: string;
+}
+
 export class ListResponse {
   @ApiProperty()
   page: number;

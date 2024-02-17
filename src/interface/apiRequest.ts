@@ -5,6 +5,11 @@ export enum Order {
   Desc = 'DESC',
 }
 
+export interface IUser {
+  email: string;
+  sub: number;
+}
+
 export class RefreshTokenRequest {
   @ApiProperty()
   refreshToken: string;

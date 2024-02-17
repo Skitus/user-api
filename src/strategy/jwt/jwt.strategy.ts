@@ -1,6 +1,10 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
+import configuration from 'config/configuration';
+import { IUser } from 'interface/apiRequest';
+
+const jwtConfig = configuration().jwt;
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -8,11 +12,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: 'skitus',
+      secretOrKey: jwtConfig.secretAccessToken,
     });
   }
 
-  async validate(payload: any) {
+  async validate(payload: IUser) {
     return { userId: payload.sub, email: payload.email };
   }
 }

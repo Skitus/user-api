@@ -2,13 +2,12 @@ import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from 'service/auth';
 import { UserService } from 'service/user';
-import { UserResponse } from 'interface/apiResponse';
+import { TokenResponse, UserAndTokenResponse } from 'interface/apiResponse';
 import {
   UserCredentialsRequest,
   RegisterUserRequest,
   RefreshTokenRequest,
 } from 'interface/apiRequest';
-import { User } from 'model';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -19,10 +18,14 @@ export class AuthController {
   ) {}
 
   @Post('/register')
-  @ApiResponse({ status: HttpStatus.OK, type: UserResponse })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: UserAndTokenResponse,
+    description: 'Successful Registered',
+  })
   public async register(
     @Body() registerRequest: RegisterUserRequest,
-  ): Promise<{ user: User; accessToken: string; refreshToken: string }> {
+  ): Promise<UserAndTokenResponse> {
     const user = await this.userService.registerUser(registerRequest);
     const { accessToken, refreshToken } = this.authService.generateToken(user);
     return { user, accessToken, refreshToken };
@@ -31,12 +34,12 @@ export class AuthController {
   @Post('/login')
   @ApiResponse({
     status: HttpStatus.OK,
-    type: UserResponse,
+    type: TokenResponse,
     description: 'Successful Login',
   })
   public async login(
     @Body() loginRequest: UserCredentialsRequest,
-  ): Promise<{ accessToken: string; refreshToken: string }> {
+  ): Promise<TokenResponse> {
     const { email, password } = loginRequest;
     const { accessToken, refreshToken } = await this.authService.login(
       email,
@@ -48,11 +51,10 @@ export class AuthController {
   @Post('refresh')
   @ApiResponse({
     status: HttpStatus.OK,
+    type: TokenResponse,
     description: 'Token successfully refreshed.',
   })
-  async refresh(
-    @Body() body: RefreshTokenRequest,
-  ): Promise<{ accessToken: string; refreshToken?: string }> {
+  async refresh(@Body() body: RefreshTokenRequest): Promise<TokenResponse> {
     return this.authService.refreshToken(body.refreshToken);
   }
 }
