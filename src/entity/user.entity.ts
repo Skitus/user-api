@@ -26,7 +26,6 @@ export class UserEntity {
 
   @CreateDateColumn({
     nullable: false,
-    name: 'created_at',
   })
   createdAt: Date;
 }

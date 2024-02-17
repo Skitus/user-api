@@ -1,18 +1,25 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
+  Param,
   ParseIntPipe,
+  Put,
   Query,
 } from '@nestjs/common';
-import { ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Order, UserListOrderBy } from 'interface/apiRequest';
+import { ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Order,
+  UpdateUserRequest,
+  UserListOrderBy,
+} from 'interface/apiRequest';
 import { UserListResponse, UserResponse } from 'interface/apiResponse';
 import { UserFormatter, UserService } from 'service/user';
 import { Auth, RequestingUser } from 'shared/decorator';
 import { UserPaginationRequest } from 'shared/value_object/pagination_request';
 import { User } from 'model';
-import { AuthService } from 'service/auth';
 
 @Controller('users')
 @ApiTags('User')
@@ -20,7 +27,6 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly userFormatter: UserFormatter,
-    private readonly authService: AuthService,
   ) {}
 
   @Get('/current')
@@ -28,6 +34,49 @@ export class UserController {
   @ApiResponse({ status: HttpStatus.OK, type: UserResponse })
   public async getCurrent(@RequestingUser() user: User): Promise<UserResponse> {
     return this.userFormatter.toUserResponse(user);
+  }
+
+  @Get('/:id')
+  @Auth()
+  @ApiParam({ name: 'id', required: true, type: Number })
+  @ApiResponse({ status: HttpStatus.OK, type: UserResponse })
+  public async getUser(
+    @RequestingUser() user: User,
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<UserResponse> {
+    const foundUser = await this.userService.getById(id);
+
+    await this.userService.ensureUserHasAccessToAnotherUser(foundUser, user);
+
+    return this.userFormatter.toUserResponse(user);
+  }
+
+  @Put('/:id')
+  @Auth()
+  @ApiParam({ name: 'id', required: true, type: Number })
+  @ApiResponse({ status: HttpStatus.OK, type: UserResponse })
+  public async updateUser(
+    @Body() body: UpdateUserRequest,
+    @RequestingUser() user: User,
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<UserResponse> {
+    const foundUser = await this.userService.getById(id);
+
+    await this.userService.ensureUserHasAccessToAnotherUser(foundUser, user);
+
+    const updatedUser = await this.userService.updateUser(foundUser, body);
+
+    return this.userFormatter.toUserResponse(updatedUser);
+  }
+
+  @Delete(':id')
+  @Auth()
+  @ApiResponse({ status: HttpStatus.NO_CONTENT })
+  async deleteUser(
+    @Param('id', ParseIntPipe) userId: number,
+    @RequestingUser() currentUser: User,
+  ): Promise<void> {
+    await this.userService.deleteUser(userId, currentUser);
   }
 
   @Get()

@@ -5,6 +5,11 @@ export enum Order {
   Desc = 'DESC',
 }
 
+export class RefreshTokenRequest {
+  @ApiProperty()
+  refreshToken: string;
+}
+
 export class UserCredentialsRequest {
   @ApiProperty()
   email: string;
@@ -21,9 +26,16 @@ export class RegisterUserRequest extends UserCredentialsRequest {
   lastName: string;
 }
 
+export class UpdateUserRequest {
+  @ApiProperty()
+  firstName: string;
+
+  @ApiProperty()
+  lastName: string;
+}
+
 export enum UserListOrderBy {
-  FirstName = 'user.first_name',
-  LastName = 'user.last_name',
-  CreatedAt = 'user.created_at',
-  Role = 'user.role',
+  FirstName = 'user.firstName',
+  LastName = 'user.lastName',
+  CreatedAt = 'user.createdAt',
 }

@@ -20,7 +20,7 @@ export class AuthenticationGuard implements CanActivate {
     }
 
     try {
-      const payload = this.jwtService.verify(token);
+      const payload = this.jwtService.verify(token, { secret: 'skitus' });
       const user = await this.userService.getById(payload.sub);
 
       if (!user) {

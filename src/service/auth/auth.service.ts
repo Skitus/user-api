@@ -1,7 +1,7 @@
 import { JwtService } from '@nestjs/jwt';
 import { Injectable } from '@nestjs/common';
 import { UserService } from 'service/user';
-import { ApplicationError } from 'shared/error';
+import { ApplicationError, InternalError } from 'shared/error';
 import { User } from 'model';
 
 @Injectable()
@@ -51,10 +51,11 @@ export class AuthService {
       const payload = this.jwtService.verify(refreshToken, {
         secret: 'skitus2',
       });
+
       const user = await this.userService.getById(payload.sub);
 
       if (!user) {
-        throw new Error('User not found');
+        throw new UserNotFoundError('User not found');
       }
 
       const { accessToken, refreshToken: newRefreshToken } =
@@ -62,9 +63,10 @@ export class AuthService {
 
       return { accessToken, refreshToken: newRefreshToken };
     } catch (error) {
-      throw new Error('Invalid token');
+      throw new InvalidTokenError('Invalid token');
     }
   }
 }
 
 export class UserNotFoundError extends ApplicationError {}
+export class InvalidTokenError extends InternalError {}

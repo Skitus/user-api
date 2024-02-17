@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { UserRepository } from 'repository';
 import { User } from 'model';
-import { RegisterUserRequest } from 'interface/apiRequest';
+import { RegisterUserRequest, UpdateUserRequest } from 'interface/apiRequest';
 import { ApplicationError } from 'shared/error';
 import { UserPaginationRequest } from 'shared/value_object/pagination_request';
 import { PaginationResponse } from 'shared/value_object/pagination_response';
@@ -37,6 +37,28 @@ export class UserService {
 
     if (userExists) {
       throw new UserAlreadyExistsError('User already exist');
+    }
+  }
+
+  public async deleteUser(userId: number, currentUser: User): Promise<void> {
+    const userToDelete = await this.getById(userId);
+
+    this.ensureUserHasAccessToAnotherUser(userToDelete, currentUser);
+
+    await this.userRepository.delete(userToDelete.id);
+  }
+
+  public async updateUser(user: User, body: UpdateUserRequest): Promise<User> {
+    const updatedUser = await this.userRepository.update(user.id, body);
+
+    return updatedUser;
+  }
+
+  public ensureUserHasAccessToAnotherUser(foundUser: User, user: User): void {
+    if (foundUser.id !== user.id) {
+      throw new UserHasNotAccessError(
+        'User has not access to manipulate another user',
+      );
     }
   }
 
@@ -92,3 +114,5 @@ export class UserService {
 export class UserNotFoundError extends ApplicationError {}
 export class UserAlreadyExistsError extends ApplicationError {}
 export class UserNotFoundByEmailError extends ApplicationError {}
+export class UserCaNotDeleteAnotherUserError extends ApplicationError {}
+export class UserHasNotAccessError extends ApplicationError {}

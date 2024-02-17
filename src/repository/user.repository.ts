@@ -10,6 +10,7 @@ import {
   applyPaginationParams,
   ListWithTotal,
 } from 'shared/util/typeorm';
+import { UpdateUserRequest } from 'interface/apiRequest';
 
 @Injectable()
 export class UserRepository {
@@ -47,6 +48,29 @@ export class UserRepository {
       .getOne();
 
     return this.convertToModel(userEntity);
+  }
+
+  public async update(id: number, body: UpdateUserRequest): Promise<User> {
+    await this.manager
+      .createQueryBuilder()
+      .update(UserEntity)
+      .set({
+        firstName: body.firstName,
+        lastName: body.lastName,
+      })
+      .where({ id })
+      .execute();
+
+    return (await this.getById(id)) as User;
+  }
+
+  public async delete(userId: number): Promise<void> {
+    await this.manager
+      .createQueryBuilder()
+      .delete()
+      .from(UserEntity, 'user')
+      .where('id = :userId', { userId })
+      .execute();
   }
 
   public async getByEmail(email: string): Promise<Result<User>> {

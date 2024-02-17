@@ -1,6 +1,5 @@
-import { ApplicationError } from 'shared/error';
+import { ApplicationError, InternalError } from 'shared/error';
 import { Order } from 'interface/apiRequest';
-import { HttpStatus } from '@nestjs/common';
 
 export interface Filter<T> {
   key: T;
@@ -42,13 +41,7 @@ export abstract class PaginationRequest<T> {
   private validateFilters(filters: Array<Filter<string>>): void {
     filters.forEach((filter) => {
       if (!this.columnsToFilter.includes(filter.key)) {
-        throw new InvalidFiltersError(
-          'Invalid filters',
-          HttpStatus.BAD_REQUEST,
-          {
-            columnsToFilter: this.columnsToFilter,
-          },
-        );
+        throw new InvalidFiltersError('Invalid filters');
       }
     });
   }
@@ -56,4 +49,4 @@ export abstract class PaginationRequest<T> {
 
 export class MaxRowsPerPageError extends ApplicationError {}
 export class WrongPageNumberError extends ApplicationError {}
-export class InvalidFiltersError extends ApplicationError {}
+export class InvalidFiltersError extends InternalError {}

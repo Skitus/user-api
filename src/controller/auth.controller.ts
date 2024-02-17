@@ -1,11 +1,12 @@
 import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from 'service/auth';
-import { UserService, UserFormatter } from 'service/user';
+import { UserService } from 'service/user';
 import { UserResponse } from 'interface/apiResponse';
 import {
   UserCredentialsRequest,
   RegisterUserRequest,
+  RefreshTokenRequest,
 } from 'interface/apiRequest';
 import { User } from 'model';
 
@@ -50,8 +51,8 @@ export class AuthController {
     description: 'Token successfully refreshed.',
   })
   async refresh(
-    @Body('refreshToken') refreshToken: string,
+    @Body() body: RefreshTokenRequest,
   ): Promise<{ accessToken: string; refreshToken?: string }> {
-    return this.authService.refreshToken(refreshToken);
+    return this.authService.refreshToken(body.refreshToken);
   }
 }

@@ -9,7 +9,7 @@ export function applyPaginationParams<T extends ObjectLiteral>(
     query = query.orderBy(paginationRequest.orderBy, paginationRequest.order);
   }
 
-  return query
-    .limit(paginationRequest.rowsPerPage)
-    .offset(paginationRequest.page * paginationRequest.rowsPerPage);
+  const offset = (+paginationRequest.page - 1) * +paginationRequest.rowsPerPage;
+
+  return query.limit(+paginationRequest.rowsPerPage).offset(offset);
 }

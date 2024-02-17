@@ -11,5 +11,6 @@ export default () => {
     password: dbConfig.password,
     synchronize: dbConfig.synchronize,
     entities: dbConfig.entities,
+    logging: true,
   };
 };
