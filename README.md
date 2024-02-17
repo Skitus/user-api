@@ -3,8 +3,9 @@
 ### To init project you need to do such following instructions:
 ```bash 
 1. git clone git@github.com:Skitus/user-api.git (or https)
-2. chmod +x init-project-script.sh (see please windows example or below you will see how to run project mannualy)
-3. ./init-project-script.sh 
+2. cd user-api
+3. chmod +x init-project-script.sh (see please windows example or below you will see how to run project mannualy)
+4. ./init-project-script.sh 
 ```
 ### After you will get an error that your DB is not set up. Please stop the application and set up DB, than run 
 ```bash
