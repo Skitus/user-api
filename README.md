@@ -1,13 +1,13 @@
 # NODE JS VERSION 18.18.0
 
-### To init project you need to do such following instructions:
+### To init project by script you need to do such following instructions:
 ```bash 
 1. git clone git@github.com:Skitus/user-api.git (or https)
 2. cd user-api
 3. chmod +x init-project-script.sh (see please windows example or below you will see how to run project mannualy)
 4. ./init-project-script.sh 
 ```
-### After you will get an error that your DB is not set up. Please stop the application and set up DB, than run 
+### After you will get an error that your DB is not set up. Please stop the application and set up DB in src/config/configuration.ts file, than run 
 ```bash
 yarn migration:run
 and then 
@@ -27,29 +27,6 @@ $ cp src/config/configuration.example.ts src/config/configuration.ts
 ```
 
 ### Install Dependencies: Use Yarn to install the project's dependencies. Ensure you have Yarn installed on your system.
-```bash
-$ yarn
-```
-
-### Start the Development Server: Launch the project in development mode with Yarn. This will start the application on a local development server (HERE AFTER RUN THIS COMMAND YOU WILL GET AN ERROR IT IS OK RUN JUST INSTRUCTION).
-```bash
-yarn start:dev
-```
-
-### Stop the Development Server: If you need to stop the development server, you can usually do so by pressing Ctrl + C in the terminal. If that doesn't work, you may need to find the process ID (PID) of the server and kill it using pkill or another method. For example, to kill all Yarn processes, you could use:
-```bash
-pkill -f yarn
-Or you can just stop development mode manually (ctrl + C) 
-```
-
-### Clean Up: After stopping the development server, you might want to clean up the project directory by removing the node_modules directory, the dist directory, and the yarn.lock file. These steps ensure that you have a fresh start for the next installation or build.
-```bash
-$ rm -rf node_modules
-$ rm -rf dist
-$ rm -f yarn.lock
-```
-
-### Reinstall Dependencies: To reinstall the project dependencies, simply run Yarn again.
 ```bash
 $ yarn
 ```
