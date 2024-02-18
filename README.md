@@ -1,5 +1,7 @@
 # NODE JS VERSION 18.18.0
 
+## Whole application is placed here -> http://127.0.0.1:<your_port> swagger placed here -> http://127.0.0.1:<your_port>/api
+
 ### To init project by script you need to do such following instructions:
 ```bash 
 1. git clone git@github.com:Skitus/user-api.git (or https)
