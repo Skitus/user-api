@@ -1,5 +1,7 @@
 # NODE JS VERSION 18.18.0
 
+## You can see how to run project [here](https://www.youtube.com/watch?v=nY6iv2-d1Xo)
+
 ## Whole application is placed here -> http://127.0.0.1:<your_port> swagger placed here -> http://127.0.0.1:<your_port>/api
 
 ### To init project by script you need to do such following instructions:
